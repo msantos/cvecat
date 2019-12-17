@@ -4,10 +4,14 @@ cvecat [*options*] *CVE-YYYY-NNNN* *...*
 
 # DESCRIPTION
 
-Format and write CVE data to stdout
+A command line utility to format and write CVE data to stdout.
 
 cvecat takes one or more CVE identifiers as arguments and outputs the
-data to standard output.
+data to standard output. If no arguments are provided, cvecat reads the
+CVE identifiers from stdin, one per line.
+
+To test formatting, cvecat can read JSON data from stdin by using `-`
+as an argument.
 
 The CVE data is download from the `cvelist` project on GitHub:
 
@@ -40,6 +44,12 @@ Assigner: {{.CveDataMeta.Assigner}}
 cvecat --format="$FORMAT" CVE-2019-6013
 ```
 
+## Test Formatting
+
+```
+cat CVE-2019-6013.json | cvecat --format="$FORMAT" -
+```
+
 # OPTIONS
 
 --dryrun
@@ -57,7 +67,7 @@ cvecat --format="$FORMAT" CVE-2019-6013
 
 ## shell
 
-```
+``` bash
 #!/bin/bash
 
 set -o errexit
