@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path"
@@ -29,8 +28,6 @@ type argvT struct {
 const (
 	cvecatVersion = "0.3.0"
 )
-
-var stderr = log.New(os.Stderr, "", 0)
 
 func args() *argvT {
 	flag.Usage = func() {
@@ -88,7 +85,7 @@ func main() {
 	}
 
 	if scanner.Err() != nil {
-		stderr.Println("error: ", scanner.Err())
+		fmt.Fprintln(os.Stderr, "error: ", scanner.Err())
 	}
 }
 
@@ -96,19 +93,19 @@ func run(argv *argvT, cve string) {
 	url, err := geturl(cve)
 	if err != nil {
 		if argv.verbose > 0 {
-			stderr.Printf("error: %s: %v: format is CVE-<YYYY>-<NNNN...>\n",
+			fmt.Fprintf(os.Stderr, "error: %s: %v: format is CVE-<YYYY>-<NNNN...>\n",
 				cve, err)
 		}
 		return
 	}
 	if argv.verbose > 1 {
-		stderr.Println(url)
+		fmt.Fprintln(os.Stderr, url)
 	}
 	if argv.dryrun {
 		return
 	}
 	if err := cat(argv, url); err != nil {
-		stderr.Printf("error: %s: %v\n", cve, err)
+		fmt.Fprintf(os.Stderr, "error: %s: %v\n", cve, err)
 	}
 }
 
@@ -121,14 +118,15 @@ func cat(argv *argvT, url string) error {
 		return nil
 	}
 	if argv.verbose > 2 {
-		stderr.Printf("%s", body)
+		fmt.Fprintf(os.Stderr, "%s", body)
 	}
 	c := &cveJSON4{}
 	if err := json.Unmarshal(body, c); err != nil {
-		stderr.Fatalln("error:", url, ":", err)
+		fmt.Fprintln(os.Stderr, "error:", url, ":", err)
+		os.Exit(111)
 	}
 	if argv.verbose > 3 {
-		stderr.Printf("%+v", c)
+		fmt.Fprintf(os.Stderr, "%+v", c)
 	}
 	if len(c.Description.DescriptionData) == 0 {
 		return errors.New("no description")
