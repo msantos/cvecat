@@ -70,7 +70,7 @@ func main() {
 
 	if len(argv.cve) > 0 {
 		for _, cve := range argv.cve {
-			run(argv, cve)
+			argv.run(cve)
 		}
 		return
 	}
@@ -81,7 +81,7 @@ func main() {
 		if strings.TrimSpace(cve) == "" {
 			continue
 		}
-		run(argv, cve)
+		argv.run(cve)
 	}
 
 	if scanner.Err() != nil {
@@ -89,7 +89,7 @@ func main() {
 	}
 }
 
-func run(argv *argvT, cve string) {
+func (argv *argvT) run(cve string) {
 	url, err := geturl(cve)
 	if err != nil {
 		if argv.verbose > 0 {
@@ -104,12 +104,12 @@ func run(argv *argvT, cve string) {
 	if argv.dryrun {
 		return
 	}
-	if err := cat(argv, url); err != nil {
+	if err := argv.cat(url); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %s: %v\n", cve, err)
 	}
 }
 
-func cat(argv *argvT, url string) error {
+func (argv *argvT) cat(url string) error {
 	body, err := read(url)
 	if err != nil {
 		return err
