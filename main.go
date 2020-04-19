@@ -98,8 +98,8 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		cve := scanner.Text()
-		if strings.TrimSpace(cve) == "" {
+		cve := strings.TrimSpace(scanner.Text())
+		if cve == "" {
 			continue
 		}
 		argv.run(cve)
