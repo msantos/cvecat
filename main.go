@@ -50,6 +50,13 @@ const (
 	cvecatVersion = "0.3.0"
 )
 
+func getenv(k, def string) string {
+	if v, ok := os.LookupEnv(k); ok {
+		return v
+	}
+	return def
+}
+
 func args() *argvT {
 	flag.Usage = func() {
 		_, _ = fmt.Fprintf(os.Stderr, `%s v%s
@@ -59,15 +66,18 @@ func args() *argvT {
 		flag.PrintDefaults()
 	}
 
-	formatDefault := os.Getenv("CVECAT_FORMAT")
-	if formatDefault == "" {
-		formatDefault =
-			`*{{.CveDataMeta.ID}}*: {{ (index .Description.DescriptionData 0).Value}}
-`
-	}
-
 	dryrun := flag.Bool("dryrun", false, "Do not download")
-	format := flag.String("format", formatDefault, "Output template")
+
+	format := flag.String(
+		"format",
+		getenv(
+			"CVECAT_FORMAT",
+			`*{{.CveDataMeta.ID}}*: {{ (index .Description.DescriptionData 0).Value}}
+`,
+		),
+		"Output template",
+	)
+
 	verbose := flag.Int("verbose", 0, "Enable debug messages")
 	help := flag.Bool("help", false, "Display usage")
 
