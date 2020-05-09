@@ -27,6 +27,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -99,14 +100,13 @@ func args() *argvT {
 func main() {
 	argv := args()
 
+	var r io.Reader = os.Stdin
+
 	if len(argv.cve) > 0 {
-		for _, cve := range argv.cve {
-			argv.run(cve)
-		}
-		return
+		r = strings.NewReader(strings.Join(argv.cve, "\n"))
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
+	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		cve := strings.TrimSpace(scanner.Text())
 		if cve == "" {
