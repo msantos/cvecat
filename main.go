@@ -23,6 +23,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -112,60 +113,65 @@ func main() {
 		if cve == "" {
 			continue
 		}
-		argv.run(cve)
+		buf, err := argv.run(cve)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			continue
+		}
+		if len(buf) > 0 {
+			fmt.Printf("%s", buf)
+		}
 	}
 
 	if scanner.Err() != nil {
-		fmt.Fprintln(os.Stderr, "error: ", scanner.Err())
+		fmt.Fprintln(os.Stderr, "error:", scanner.Err())
 	}
 }
 
-func (argv *argvT) run(cve string) {
+func (argv *argvT) run(cve string) ([]byte, error) {
 	url, err := geturl(cve)
 	if err != nil {
 		if argv.verbose > 0 {
 			fmt.Fprintf(os.Stderr, "error: %s: %v: format is CVE-<YYYY>-<NNNN...>\n",
 				cve, err)
 		}
-		return
+		return []byte{}, nil
 	}
 	if argv.verbose > 1 {
 		fmt.Fprintln(os.Stderr, url)
 	}
 	if argv.dryrun {
-		return
+		return []byte{}, nil
 	}
-	if err := argv.cat(url); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %s: %v\n", cve, err)
-	}
+	return argv.cat(url)
 }
 
-func (argv *argvT) cat(url string) error {
+func (argv *argvT) cat(url string) ([]byte, error) {
 	body, err := read(url)
 	if err != nil {
-		return err
+		return body, err
 	}
 	if len(body) == 0 {
-		return nil
+		return body, nil
 	}
 	if argv.verbose > 2 {
 		fmt.Fprintf(os.Stderr, "%s", body)
 	}
 	c := &cveJSON4{}
 	if err := json.Unmarshal(body, c); err != nil {
-		fmt.Fprintln(os.Stderr, "error:", url, ":", err)
-		os.Exit(111)
+		return body, err
 	}
 	if argv.verbose > 3 {
 		fmt.Fprintf(os.Stderr, "%+v", c)
 	}
 	if len(c.Description.DescriptionData) == 0 {
-		return errors.New("no description")
+		return body, errors.New("no description")
 	}
-	if err := formatCVE(argv.format, c); err != nil {
-		return err
+	b, err := format(argv.format, c)
+	if err != nil {
+		return b, err
 	}
-	return nil
+	return b, nil
 }
 
 func read(url string) (body []byte, err error) {
@@ -244,18 +250,15 @@ func parseid(id string) (prefix, year, ref string, err error) {
 	return prefix, year, ref, nil
 }
 
-func formatCVE(format string, cve *cveJSON4) error {
-	tmpl, err := template.New("format").Parse(format)
+func format(fmt string, cve *cveJSON4) ([]byte, error) {
+	tmpl, err := template.New("format").Parse(fmt)
 	if err != nil {
-		return err
+		return []byte{}, err
 	}
 
-	stdout := bufio.NewWriter(os.Stdout)
-	if err := tmpl.Execute(stdout, cve); err != nil {
-		return err
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, cve); err != nil {
+		return buf.Bytes(), err
 	}
-	if err := stdout.Flush(); err != nil {
-		return err
-	}
-	return nil
+	return buf.Bytes(), nil
 }
