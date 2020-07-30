@@ -40,7 +40,6 @@ import (
 	"time"
 )
 
-// argvT : command line arguments
 type argvT struct {
 	cve     []string
 	format  string
@@ -50,6 +49,14 @@ type argvT struct {
 
 const (
 	cvecatVersion = "0.3.0"
+)
+
+var (
+	errNoDescr          = errors.New("no description")
+	errInvalidCVE       = errors.New("invalid CVE")
+	errInvalidCVEPrefix = errors.New("invalid CVE prefix")
+	errInvalidCVEYear   = errors.New("invalid CVE year")
+	errInvalidCVEID     = errors.New("invalid CVE identifier")
 )
 
 func getenv(k, def string) string {
@@ -165,7 +172,7 @@ func (argv *argvT) cat(url string) ([]byte, error) {
 		fmt.Fprintf(os.Stderr, "%+v", c)
 	}
 	if len(c.Description.DescriptionData) == 0 {
-		return body, errors.New("no description")
+		return body, errNoDescr
 	}
 	b, err := format(argv.format, c)
 	if err != nil {
@@ -179,6 +186,7 @@ func read(url string) (body []byte, err error) {
 		body, err = ioutil.ReadAll(os.Stdin)
 		return body, err
 	}
+	// #nosec G107
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -230,22 +238,22 @@ func parseid(id string) (prefix, year, ref string, err error) {
 		year = p[1]
 		prefix = strings.ToUpper(p[0])
 	default:
-		return prefix, year, ref, errors.New("invalid CVE")
+		return prefix, year, ref, errInvalidCVE
 	}
 	if len(ref) < 4 {
 		ref = strings.Repeat("0", 4-len(ref)) + ref
 	}
 	if prefix != "CVE" {
-		return prefix, year, ref, errors.New("invalid CVE prefix")
+		return prefix, year, ref, errInvalidCVEPrefix
 	}
 	if ok, err := regexp.MatchString("^[0-9]{4}$", year); !ok || err != nil {
-		return prefix, year, ref, errors.New("invalid CVE year")
+		return prefix, year, ref, errInvalidCVEYear
 	}
 	if ok, err := regexp.MatchString(
 		"^[0-9][0-9][0-9][0-9]+$",
 		ref,
 	); !ok || err != nil {
-		return prefix, year, ref, errors.New("invalid CVE identifier")
+		return prefix, year, ref, errInvalidCVEID
 	}
 	return prefix, year, ref, nil
 }
