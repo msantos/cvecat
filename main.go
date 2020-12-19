@@ -181,10 +181,9 @@ func (argv *argvT) cat(url string) ([]byte, error) {
 	return b, nil
 }
 
-func read(url string) (body []byte, err error) {
+func read(url string) ([]byte, error) {
 	if url == "-" {
-		body, err = ioutil.ReadAll(os.Stdin)
-		return body, err
+		return ioutil.ReadAll(os.Stdin)
 	}
 	// #nosec G107
 	resp, err := http.Get(url)
@@ -192,7 +191,7 @@ func read(url string) (body []byte, err error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	body, err = ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +209,7 @@ func geturl(id string) (string, error) {
 	if id == "-" {
 		return "-", nil
 	}
-	prefix, year, ref, err := parseid(id)
+	prefix, year, ref, err := parseID(id)
 	if err != nil {
 		return "", err
 	}
@@ -222,7 +221,7 @@ func geturl(id string) (string, error) {
 	), nil
 }
 
-func parseid(id string) (prefix, year, ref string, err error) {
+func parseID(id string) (prefix, year, ref string, err error) {
 	prefix = "CVE"
 	p := strings.Split(id, "-")
 	switch len(p) {
