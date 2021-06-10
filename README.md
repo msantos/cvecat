@@ -63,6 +63,11 @@ cat CVE-2019-6013.json | cvecat --format="$FORMAT" -
 : Enable debug messages. To see the JSON field names for use in the
   template, use `verbose=3`.
 
+# ENVIRONMENT VARIABLES
+
+CVECAT_FORMAT
+:set defaut value for --format
+
 # Alternatives
 
 ## shell

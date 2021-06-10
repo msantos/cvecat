@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2019-2020 Michael Santos
+// Copyright (c) 2019-2021 Michael Santos
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ type argvT struct {
 }
 
 const (
-	cvecatVersion = "0.3.0"
+	cvecatVersion = "0.3.1"
 )
 
 var (
