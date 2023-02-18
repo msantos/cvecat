@@ -27,7 +27,7 @@ type argvT struct {
 }
 
 const (
-	cvecatVersion = "0.3.2"
+	cvecatVersion = "0.4.0"
 )
 
 var (

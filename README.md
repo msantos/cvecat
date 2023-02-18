@@ -15,7 +15,15 @@ as an argument.
 
 The CVE data is download from the `cvelist` project on GitHub:
 
-    https://github.com/CVEProject/cvelist
+```
+https://github.com/CVEProject/cvelist
+```
+
+# BUILD
+
+```
+go install codeberg.org/msantos/cvecat@latest
+```
 
 # EXAMPLES
 
@@ -57,22 +65,22 @@ cat CVE-2019-6013.json | cvecat --format="$FORMAT" -
 
 --format *string*
 : Template for formatting output using the [Go template
-  syntax](https://golang.org/pkg/text/template/)
+syntax](https://golang.org/pkg/text/template/)
 
 --verbose *int*
 : Enable debug messages. To see the JSON field names for use in the
-  template, use `verbose=3`.
+template, use `verbose=3`.
 
 # ENVIRONMENT VARIABLES
 
 CVECAT_FORMAT
-:set defaut value for --format
+:set default value for --format
 
 # Alternatives
 
 ## shell
 
-``` bash
+```bash
 #!/bin/bash
 
 set -o errexit
