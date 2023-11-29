@@ -17,6 +17,8 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	"codeberg.org/msantos/cvecat/pkg/cve5"
 )
 
 type argvT struct {
@@ -60,7 +62,7 @@ func args() *argvT {
 		"format",
 		getenv(
 			"CVECAT_FORMAT",
-			`*{{.CveDataMeta.ID}}*: {{ (index .Description.DescriptionData 0).Value}}
+			`*{{.CveMetadata.CveID}}*: {{ (index .Containers.Cna.Descriptions 0).Value}}
 `,
 		),
 		"Output template",
@@ -143,17 +145,17 @@ func (argv *argvT) cat(url string) ([]byte, error) {
 	if argv.verbose > 2 {
 		fmt.Fprintf(os.Stderr, "%s", body)
 	}
-	c := &cveJSON4{}
-	if err := json.Unmarshal(body, c); err != nil {
+	cve := &cve5.CVE{}
+	if err := json.Unmarshal(body, cve); err != nil {
 		return body, err
 	}
 	if argv.verbose > 3 {
-		fmt.Fprintf(os.Stderr, "%+v", c)
+		fmt.Fprintf(os.Stderr, "%+v", cve)
 	}
-	if len(c.Description.DescriptionData) == 0 {
+	if len(cve.Containers.Cna.Descriptions) == 0 {
 		return body, errNoDescr
 	}
-	b, err := format(argv.format, c)
+	b, err := format(argv.format, cve)
 	if err != nil {
 		return b, err
 	}
@@ -193,7 +195,7 @@ func geturl(id string) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf(
-		"https://raw.githubusercontent.com/CVEProject/cvelist/master/%s/%sxxx/%s-%s-%s.json",
+		"https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/%s/%sxxx/%s-%s-%s.json",
 		year,
 		ref[0:len(ref)-3],
 		prefix, year, ref,
@@ -236,7 +238,7 @@ func parseID(id string) (prefix, year, ref string, err error) {
 	return prefix, year, ref, nil
 }
 
-func format(fmt string, cve *cveJSON4) ([]byte, error) {
+func format(fmt string, cve *cve5.CVE) ([]byte, error) {
 	tmpl, err := template.New("format").Parse(fmt)
 	if err != nil {
 		return []byte{}, err

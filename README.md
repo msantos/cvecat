@@ -16,7 +16,7 @@ as an argument.
 The CVE data is download from the `cvelist` project on GitHub:
 
 ```
-https://github.com/CVEProject/cvelist
+https://github.com/CVEProject/cvelistV5
 ```
 
 # BUILD
@@ -46,8 +46,8 @@ EOF
 ## Specify Formatting
 
 ```
-FORMAT='ID: {{.CveDataMeta.ID}}
-Assigner: {{.CveDataMeta.Assigner}}
+FORMAT='ID: {{.CveMetadata.CveID}}
+Assigner: {{.CveMetadata.AssignerShortName}}
 '
 cvecat --format="$FORMAT" CVE-2019-6013
 ```
@@ -107,8 +107,8 @@ cve() {
     exit 1
   fi
 
-  # https://raw.githubusercontent.com/CVEProject/cvelist/master/2019/10xxx/CVE-2019-10210.json
-  URL="https://raw.githubusercontent.com/CVEProject/cvelist/master/$YEAR/${ID%[0-9][0-9][0-9]}xxx/$CVE.json"
+  # https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/2019/10xxx/CVE-2019-10210.json
+  URL="https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves/$YEAR/${ID%[0-9][0-9][0-9]}xxx/$CVE.json"
 
   curl -s "$URL"
   IFS="$OFS"
@@ -116,6 +116,6 @@ cve() {
 
 for arg in "$@"; do
   cve "$arg" |
-    jq -r '.description.description_data[] | select(.lang == "eng") | .value'
+    jq -r '.containers.cna.descriptions[] | select(.lang == "en") | .value'
 done
 ```
