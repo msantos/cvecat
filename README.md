@@ -22,7 +22,7 @@ https://github.com/CVEProject/cvelistV5
 # BUILD
 
 ```
-go install codeberg.org/msantos/cvecat@latest
+go install codeberg.org/msantos/cvecat/cmd/cvecat@latest
 ```
 
 # EXAMPLES

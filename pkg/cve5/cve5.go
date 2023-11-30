@@ -6,9 +6,9 @@ import (
 )
 
 // Timestamp is an RFC3339 timestamp that may include nanoseconds:
-// 2023-11-17T12:57:41.538666
-// 2023-11-24T19:51:55.099Z
-// 2010-05-24T00:00:00Z
+// * 2023-11-17T12:57:41.538666
+// * 2023-11-24T19:51:55.099Z
+// * 2010-05-24T00:00:00Z
 type Timestamp struct {
 	time.Time
 }
