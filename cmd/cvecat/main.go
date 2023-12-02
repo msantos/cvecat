@@ -142,6 +142,9 @@ func (argv *argvT) cat(url string) ([]byte, error) {
 	if len(body) == 0 {
 		return body, nil
 	}
+	if argv.format == "json" {
+		return body, nil
+	}
 	if argv.verbose > 2 {
 		fmt.Fprintf(os.Stderr, "%s", body)
 	}
