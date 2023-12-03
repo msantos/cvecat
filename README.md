@@ -46,8 +46,8 @@ EOF
 ## Specify Formatting
 
 ```
-FORMAT='ID: {{.CveMetadata.CveID}}
-Assigner: {{.CveMetadata.AssignerShortName}}
+FORMAT='ID: {{.CVE.CveMetadata.CveID}}
+Assigner: {{.CVE.CveMetadata.AssignerShortName}}
 '
 cvecat --format="$FORMAT" CVE-2019-6013
 ```

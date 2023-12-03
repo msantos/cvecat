@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"codeberg.org/msantos/cvecat/pkg/cve5"
+	"codeberg.org/msantos/cvecat/pkg/cvecat"
 )
 
 type argvT struct {
@@ -29,7 +30,7 @@ type argvT struct {
 }
 
 const (
-	cvecatVersion = "0.5.0"
+	cvecatVersion = "0.6.0"
 )
 
 var (
@@ -62,7 +63,7 @@ func args() *argvT {
 		"format",
 		getenv(
 			"CVECAT_FORMAT",
-			`*{{.CveMetadata.CveID}}*: {{ (index .Containers.Cna.Descriptions 0).Value}}
+			`*{{.CVE.CveMetadata.CveID}}*: {{ (index .CVE.Containers.Cna.Descriptions 0).Value}}
 `,
 		),
 		"Output template",
@@ -148,8 +149,8 @@ func (argv *argvT) cat(url string) ([]byte, error) {
 	if argv.verbose > 2 {
 		fmt.Fprintf(os.Stderr, "%s", body)
 	}
-	cve := &cve5.CVE{}
-	if err := json.Unmarshal(body, cve); err != nil {
+	cve := cve5.CVE{}
+	if err := json.Unmarshal(body, &cve); err != nil {
 		return body, err
 	}
 	if argv.verbose > 3 {
@@ -158,7 +159,12 @@ func (argv *argvT) cat(url string) ([]byte, error) {
 	if len(cve.Containers.Cna.Descriptions) == 0 {
 		return body, errNoDescr
 	}
-	b, err := format(argv.format, cve)
+	data := &cvecat.Data{
+		CVE:     cve,
+		URL:     url,
+		Version: cvecatVersion,
+	}
+	b, err := format(argv.format, data)
 	if err != nil {
 		return b, err
 	}
@@ -241,14 +247,14 @@ func parseID(id string) (prefix, year, ref string, err error) {
 	return prefix, year, ref, nil
 }
 
-func format(fmt string, cve *cve5.CVE) ([]byte, error) {
+func format(fmt string, data *cvecat.Data) ([]byte, error) {
 	tmpl, err := template.New("format").Parse(fmt)
 	if err != nil {
 		return []byte{}, err
 	}
 
 	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, cve); err != nil {
+	if err := tmpl.Execute(&buf, data); err != nil {
 		return buf.Bytes(), err
 	}
 	return buf.Bytes(), nil
