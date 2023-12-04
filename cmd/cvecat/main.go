@@ -18,6 +18,7 @@ import (
 	"text/template"
 	"time"
 
+	"codeberg.org/msantos/cvecat/internal/config"
 	"codeberg.org/msantos/cvecat/pkg/cve5"
 	"codeberg.org/msantos/cvecat/pkg/cvecat"
 )
@@ -28,10 +29,6 @@ type argvT struct {
 	dryrun  bool
 	verbose int
 }
-
-const (
-	cvecatVersion = "0.6.0"
-)
 
 var (
 	errNoDescr          = errors.New("no description")
@@ -53,7 +50,7 @@ func args() *argvT {
 		_, _ = fmt.Fprintf(os.Stderr, `%s v%s
   Usage: %s [<option>] <CVE> <...>
 
-`, path.Base(os.Args[0]), cvecatVersion, os.Args[0])
+`, path.Base(os.Args[0]), config.Version(), os.Args[0])
 		flag.PrintDefaults()
 	}
 
@@ -162,7 +159,7 @@ func (argv *argvT) cat(url string) ([]byte, error) {
 	data := &cvecat.Data{
 		CVE:     cve,
 		URL:     url,
-		Version: cvecatVersion,
+		Version: config.Version(),
 	}
 	b, err := format(argv.format, data)
 	if err != nil {
