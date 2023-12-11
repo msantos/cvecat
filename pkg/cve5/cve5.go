@@ -48,13 +48,15 @@ type CVE struct {
 				Value string `json:"value"`
 			} `json:"descriptions"`
 			Affected []struct {
-				Vendor   string `json:"vendor"`
-				Product  string `json:"product"`
-				Versions []struct {
-					Version     string `json:"version"`
-					LessThan    string `json:"lessThan"`
-					Status      string `json:"status"`
-					VersionType string `json:"versionType"`
+				Vendor        string `json:"vendor"`
+				Product       string `json:"product"`
+				DefaultStatus string `json:"defaultStatus"`
+				Versions      []struct {
+					Version         string `json:"version"`
+					LessThan        string `json:"lessThan"`
+					LessThanOrEqual string `json:"lessThanOrEqual"`
+					Status          string `json:"status"`
+					VersionType     string `json:"versionType"`
 				} `json:"versions"`
 			} `json:"affected"`
 			References []struct {
