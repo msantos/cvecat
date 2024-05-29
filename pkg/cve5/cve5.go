@@ -9,13 +9,21 @@ import (
 // * 2023-11-17T12:57:41.538666
 // * 2023-11-24T19:51:55.099Z
 // * 2010-05-24T00:00:00Z
+// * 2023-12-13T00:00:00+00:00
 type Timestamp struct {
 	time.Time
 }
 
+func trim(b []byte) string {
+	s := strings.Trim(string(b), "\"")
+	if len(b) >= 19 {
+		return s[:19]
+	}
+	return s
+}
+
 func (t *Timestamp) UnmarshalJSON(b []byte) error {
-	before, _, _ := strings.Cut(strings.TrimSuffix(strings.Trim(string(b), "\""), "Z"), ".")
-	x, err := time.Parse("2006-01-02T15:04:05", before)
+	x, err := time.Parse("2006-01-02T15:04:05", trim(b))
 	if err != nil {
 		return err
 	}
