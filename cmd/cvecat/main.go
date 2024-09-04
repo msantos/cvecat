@@ -8,7 +8,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -170,7 +169,7 @@ func (argv *argvT) cat(url string) ([]byte, error) {
 
 func read(url string) ([]byte, error) {
 	if url == "-" {
-		return ioutil.ReadAll(os.Stdin)
+		return io.ReadAll(os.Stdin)
 	}
 	// #nosec G107
 	resp, err := http.Get(url)
@@ -178,7 +177,7 @@ func read(url string) ([]byte, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
