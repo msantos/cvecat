@@ -1,3 +1,5 @@
+[![Go Reference](https://pkg.go.dev/badge/codeberg.org/msantos/cvecat.svg)](https://pkg.go.dev/codeberg.org/msantos/cvecat)
+
 # SYNOPSIS
 
 cvecat [*options*] *CVE-YYYY-NNNN* *...*
