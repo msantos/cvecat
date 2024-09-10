@@ -27,6 +27,12 @@ https://github.com/CVEProject/cvelistV5
 go install codeberg.org/msantos/cvecat/cmd/cvecat@latest
 ```
 
+* build from git repository
+
+```
+CGO_ENABLED=0 go build -trimpath -ldflags "-w" ./cmd/cvecat
+```
+
 # EXAMPLES
 
 ## Write CVEs to stdout
