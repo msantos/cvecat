@@ -59,7 +59,7 @@ func args() *argvT {
 		"format",
 		getenv(
 			"CVECAT_FORMAT",
-			`*{{.CVE.CveMetadata.CveID}}*: {{ (index .CVE.Containers.Cna.Descriptions 0).Value}}
+			`*{{.CVE.CveMetadata.CveID}}*: {{ replace (index .CVE.Containers.Cna.Descriptions 0).Value "(?m)\n" " " }}
 `,
 		),
 		"Output template",
@@ -243,8 +243,24 @@ func parseID(id string) (prefix, year, ref string, err error) {
 	return prefix, year, ref, nil
 }
 
-func format(fmt string, data *cvecat.Data) ([]byte, error) {
-	tmpl, err := template.New("format").Parse(fmt)
+func join(elems []string, sep string) string {
+	return strings.Join(elems, sep)
+}
+
+func format(f string, data *cvecat.Data) ([]byte, error) {
+	funcMap := template.FuncMap{
+		"replace": func(s, expr, repl string) string {
+			re, err := regexp.Compile(expr)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "error: %v", err)
+				return s
+			}
+			return re.ReplaceAllString(s, repl)
+		},
+		"join": join,
+	}
+
+	tmpl, err := template.New("format").Funcs(funcMap).Parse(f)
 	if err != nil {
 		return []byte{}, err
 	}
