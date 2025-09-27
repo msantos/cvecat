@@ -247,6 +247,33 @@ func join(elems []string, sep string) string {
 	return strings.Join(elems, sep)
 }
 
+var markdownEscaper = strings.NewReplacer(
+	// The backslash must be first.
+	`\`, `\\`,
+	`*`, `\*`,
+	`_`, `\_`,
+	`#`, `\#`,
+	"`", "\\`",
+	`[`, `\[`,
+	`]`, `\]`,
+	`(`, `\(`,
+	`)`, `\)`,
+	`>`, `\>`,
+	`+`, `\+`,
+	`-`, `\-`,
+	`.`, `\.`,
+	`!`, `\!`,
+	`|`, `\|`,
+	`~`, `\~`,
+)
+
+// mdescape takes a string and escapes special markdown characters.
+// Allows embedding text within a markdown document without its contents
+// being interpreted as markdown syntax.
+func mdescape(text string) string {
+	return markdownEscaper.Replace(text)
+}
+
 func format(f string, data *cvecat.Data) ([]byte, error) {
 	funcMap := template.FuncMap{
 		"replace": func(s, expr, repl string) string {
@@ -257,7 +284,8 @@ func format(f string, data *cvecat.Data) ([]byte, error) {
 			}
 			return re.ReplaceAllString(s, repl)
 		},
-		"join": join,
+		"join":     join,
+		"mdescape": mdescape,
 	}
 
 	tmpl, err := template.New("format").Funcs(funcMap).Parse(f)
