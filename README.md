@@ -84,6 +84,39 @@ template, use `verbose=3`.
 CVECAT_FORMAT
 :set default value for --format
 
+## Template Functions
+
+### replace
+
+Replace all occurrences of a regular expression with a string.
+
+```
+# Converts a CVE description to a single line
+cvecat --format '*{{.CVE.CveMetadata.CveID}}*: {{ replace (index .CVE.Containers.Cna.Descriptions 0).Value "(?m)\n" " " }}
+'
+```
+
+### mdescape
+
+Escape markdown special characters so the text can be embedded in a
+markdown document.
+
+```
+#!/bin/sh
+
+set -o errexit
+
+ cat <<'EOF'
+| CVE | Description |
+| --- | --- |
+EOF
+
+# Convert description to a single line and escape | to embed the
+# description in a markdown table
+cvecat --format '| {{.CVE.CveMetadata.CveID}} | {{ mdescape (replace (index .CVE.Containers.Cna.Descriptions 0).Value "(?m)\n" " ") }} |
+'
+```
+
 # Alternatives
 
 ## shell
