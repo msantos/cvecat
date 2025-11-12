@@ -1,4 +1,4 @@
-[![Go Reference](https://pkg.go.dev/badge/codeberg.org/msantos/cvecat.svg)](https://pkg.go.dev/codeberg.org/msantos/cvecat)
+[![Go Reference](https://pkg.go.dev/badge/go.iscode.ca/cvecat.svg)](https://pkg.go.dev/go.iscode.ca/cvecat)
 
 # SYNOPSIS
 
@@ -24,7 +24,7 @@ https://github.com/CVEProject/cvelistV5
 # BUILD
 
 ```
-go install codeberg.org/msantos/cvecat/cmd/cvecat@latest
+go install go.iscode.ca/cvecat@latest
 ```
 
 * build from git repository

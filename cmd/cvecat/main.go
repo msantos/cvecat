@@ -17,9 +17,9 @@ import (
 	"text/template"
 	"time"
 
-	"codeberg.org/msantos/cvecat/internal/config"
-	"codeberg.org/msantos/cvecat/pkg/cve5"
-	"codeberg.org/msantos/cvecat/pkg/cvecat"
+	"go.iscode.ca/cvecat/internal/config"
+	"go.iscode.ca/cvecat/pkg/cve5"
+	"go.iscode.ca/cvecat/pkg/cvecat"
 )
 
 type argvT struct {

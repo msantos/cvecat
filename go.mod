@@ -1,3 +1,3 @@
-module codeberg.org/msantos/cvecat
+module go.iscode.ca/cvecat
 
 go 1.13
