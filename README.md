@@ -24,7 +24,7 @@ https://github.com/CVEProject/cvelistV5
 # BUILD
 
 ```
-go install go.iscode.ca/cvecat@latest
+go install go.iscode.ca/cvecat/cmd/cvecat@latest
 ```
 
 * build from git repository
