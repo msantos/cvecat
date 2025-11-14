@@ -171,16 +171,22 @@ func read(url string) ([]byte, error) {
 	if url == "-" {
 		return io.ReadAll(os.Stdin)
 	}
+
 	// #nosec G107
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
+
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf(
 			"%d: %s",
@@ -188,6 +194,7 @@ func read(url string) ([]byte, error) {
 			strings.TrimSpace(string(body)),
 		)
 	}
+
 	return body, err
 }
 
