@@ -17,19 +17,17 @@ as an argument.
 
 The CVE data is download from the `cvelist` project on GitHub:
 
-```
 https://github.com/CVEProject/cvelistV5
-```
 
 # BUILD
 
-```
+```bash
 go install go.iscode.ca/cvecat/cmd/cvecat@latest
 ```
 
 * build from git repository
 
-```
+```bash
 CGO_ENABLED=0 go build -trimpath -ldflags "-w" ./cmd/cvecat
 ```
 
@@ -37,13 +35,13 @@ CGO_ENABLED=0 go build -trimpath -ldflags "-w" ./cmd/cvecat
 
 ## Write CVEs to stdout
 
-```
+```bash
 cvecat CVE-2019-5007 CVE-2019-5008 CVE-2019-5009
 ```
 
 ## Read from stdin to stdout
 
-```
+```bash
 cat << EOF | cvecat
 CVE-2019-5007
 CVE-2019-5008
@@ -53,7 +51,7 @@ EOF
 
 ## Specify Formatting
 
-```
+```bash
 FORMAT='ID: {{.CVE.CveMetadata.CveID}}
 Assigner: {{.CVE.CveMetadata.AssignerShortName}}
 '
@@ -62,7 +60,7 @@ cvecat --format="$FORMAT" CVE-2019-6013
 
 ## Test Formatting
 
-```
+```bash
 cat CVE-2019-6013.json | cvecat --format="$FORMAT" -
 ```
 
@@ -90,7 +88,7 @@ CVECAT_FORMAT
 
 Replace all occurrences of a regular expression with a string.
 
-```
+```bash
 # Converts a CVE description to a single line
 cvecat --format '*{{.CVE.CveMetadata.CveID}}*: {{ replace (index .CVE.Containers.Cna.Descriptions 0).Value "(?m)\n" " " }}
 '
@@ -101,7 +99,7 @@ cvecat --format '*{{.CVE.CveMetadata.CveID}}*: {{ replace (index .CVE.Containers
 Escape markdown special characters so the text can be embedded in a
 markdown document.
 
-```
+```bash
 #!/bin/sh
 
 set -o errexit
